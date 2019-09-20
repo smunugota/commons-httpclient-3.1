@@ -729,6 +729,24 @@ public class HttpConnection {
                 }
             }
 
+            if(this.socket != null){
+                String[] enabledProtocols = ((SSLSocketImpl) this.socket).getEnabledProtocols();
+                int length = enabledProtocols.length;
+                String[] changedEnabledProtocols = new String[length + 1];
+                boolean isTLSv1_2Enabled = false;
+                for(int k = 0; k< length; k++){
+                    if(enabledProtocols[k].equals("TLSv1.2")) {
+                        isTLSv1_2Enabled = true;
+                        break;
+                    }
+                    changedEnabledProtocols[k] = enabledProtocols[k];
+                }
+                if(!isTLSv1_2Enabled) {
+                    changedEnabledProtocols[length] = "TLSv1.2";
+                    ((SSLSocketImpl) this.socket).setEnabledProtocols(changedEnabledProtocols);
+                }
+            }
+
             /*
             "Nagling has been broadly implemented across networks, 
             including the Internet, and is generally performed by default 
